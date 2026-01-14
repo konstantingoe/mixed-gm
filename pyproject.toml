@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-template"
+requires-python = ">=3.10.0"
+authors = [
+    { name = "Konstantin Göbler", email = "konstantin.goebler@tum.de" },
+]
+maintainers = [
+    { name = "Konstantin Göbler", email = "konstantin.goebler@tum.de" },
+    {name = "Stephan Haug", email = "stephan.haug@tum.de" },
+]
+license = { file = "LICENSE" }
+description = "Apply this template to your python project"
+dependencies = [
+    "numpy",]
+readme = "README.md"
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "mkdocs",
+    "mike",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "pip-tools",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "uv",
+]
+
+[tool.setuptools.packages.find]
+include = ["graphical_models*"]
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }
+
+[tool.ruff]
+preview = true
+
+lint.select = [
+    "C90", # McCabe
+    "E", # pycodestyle
+    "F", # pyflakes
+    "W", # pycodestyle
+    "D", # pydocstyle
+    "ISC", # flake8-implicit-str-concat
+    "N", # pep8-naming
+    "NPY", # flake8-numpy
+    "PL", # pylint
+    "PTH", # flake8-use-pathlib
+    "SIM", # flake8-simplify
+    "TD", # flake8-todos
+    "UP", # pyupgrade
+]
+line-length = 120
+lint.extend-unfixable = ["ISC"]
+ignore = ["ISC003"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.flake8-implicit-str-concat]
+allow-multiline = false
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+    "graphical_models",
+]

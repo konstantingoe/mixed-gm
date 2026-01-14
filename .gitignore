@@ -1,0 +1,54 @@
+# LaTeX auxiliary files
+*.aux
+*.log
+*.toc
+*.synctex.gz
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex(busy)
+
+# Generated PDF files (optional, uncomment if desired)
+# *.pdf
+
+# Temporary files created by editors
+*~
+*.swp
+*.swo
+
+# Python and Jupyter Notebook files
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.ipynb_checkpoints/
+
+# Environment folders
+.env/
+.env/
+.venv/
+env/
+venv/
+.venv/
+
+# Data and output files
+*.csv
+*.xlsx
+*.h5
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# VS Code folder
+.vscode*
+
+# package files
+
+*egg-info*
+
+#docs
+
+site/
