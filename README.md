@@ -1,93 +1,208 @@
-# Python template
+# HUME: High-dimensional Undirected Mixed graph Estimation
 
-This repo is meant as a template for new projects.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Template actions
+The **hume** package implements the latent Gaussian and the latent Gaussian copula modeling approaches to learning mixed high-dimensional graphs in a fast and easy-to-use manner.
 
-After using the template action button you have to follow these steps.
+This is a Python port of the [hume R package](https://github.com/konstantingoe/hume).
 
-### Project Owner
-- [ ] Change the repo name
-- [ ] Change the meta data in the `pyproject.toml` and `README.md` files
-- [ ] Change the version in the `VERSION` file to your starting version, e.g. 0.0.1
-- [ ] In the about section, enable the use of the github pages for the documentation
-- [ ] After renaming the package, you should run `make sync-venv` and `make requirements` to update the `requirements_dev.txt` file
-- [ ] Now you should run `make sync-venv` and then `make pre-commit`
-- [ ] Change the module name in the `docs/reference.md` file
-- [ ] Once these actions are fulfilled you can delete this template actions section
+## Overview
 
+Given some (high-dimensional) dataset where both discrete and continuous variables are present, the package offers functionality to estimate an undirected graph. It is assumed that all discrete variables are ordinal. If nominal variables (where the levels are unordered) are present, the user is asked to form a dummy system.
+
+Discrete variables are assumed to have some latent continuous analogs, that are monotone transformed versions of standard Gaussians. The functions `mixed_graph_gauss()` and `mixed_graph_nonpara()` estimate the latent precision matrix of these (transformed) continuous variables where:
+
+- **`mixed_graph_gauss()`**: Assumes no transformation (latent Gaussian model)
+- **`mixed_graph_nonpara()`**: Assumes monotone and differentiable transformation functions (latent Gaussian copula model)
+
+The latter is more general and should always be used except when the user knows that the latent variables are Gaussian (this will almost never be the case).
 
 ## Authors
+
 - [Konstantin Göbler](mailto:konstantin.goebler@tum.de)
 
-**Maintainer*:* [Stephan Haug](mailto:stephan.haug@tum.de)
-<!-- if this is a student project the maintainer is the supervisor -->
+**Maintainer:** [Stephan Haug](mailto:stephan.haug@tum.de)
 
-## Table of contents
+## Table of Contents
 
 * [Documentation](#documentation)
-* [How to install](#installing)
-* [How to build](#building)
-* [How to use](#using)
-* [How to test](#testing)
-* [Github Actions](#actions)
+* [Installation](#installation)
+* [Quick Start](#quick-start)
+* [API Reference](#api-reference)
+* [Testing](#testing)
+* [Development](#development)
 
-## <a name="documentation">Documentation </a>
+## <a name="documentation">Documentation</a>
 
-Your documentation can be found [here]add link.
+Full documentation is available at [GitHub Pages](https://konstantingoe.github.io/mixed-gm/).
 
-## <a name="installing">How to install</a>
+## <a name="installation">Installation</a>
 
-The package can be installed locally via:
+### From source
 
-    pip install -e .
+```bash
+git clone https://github.com/konstantingoe/mixed-gm.git
+cd mixed-gm
+pip install -e .
+```
 
-## <a name="building">How to build</a>
+### Development installation
 
-Using the [Makefile](Makefile) the package can be installed in an editable way like this:
+```bash
+pip install -e ".[dev]"
+```
 
-    make sync-venv
+Or using make:
 
-To use the `pre-commit` hooks, one has to enable them in the venv, by
+```bash
+make sync-venv
+```
 
-    pre-commit install
+## <a name="quick-start">Quick Start</a>
 
-Then these hooks are excecuted before every commit. You can run the hooks for all files also separately
+```python
+import numpy as np
+import pandas as pd
+from hume import mixed_graph_nonpara
 
-    pre-commit run --all-files
+# Create synthetic mixed data
+np.random.seed(42)
+n = 200  # number of observations
+d = 10   # number of variables
 
-or to disable the `pip-compile` hook, which takes some time
+# Generate continuous variables
+continuous = np.random.randn(n, 5)
 
-    SKIP=pip-compile pre-commit run --all-files
+# Generate discrete (ordinal) variables
+discrete = np.random.binomial(3, 0.5, (n, 5))
 
-or equivalent
+# Combine into DataFrame
+data = pd.DataFrame(
+    np.hstack([continuous, discrete]),
+    columns=[f"cont_{i}" for i in range(5)] + [f"disc_{i}" for i in range(5)]
+)
 
-    make pre-commit
+# Estimate the graph using nonparanormal approach (recommended)
+result = mixed_graph_nonpara(data, param=0.1)
 
-## <a name="using">How to use</a>
+print(f"Number of edges: {result.n_edges}")
+print(f"Maximum degree: {result.max_degree}")
+print(f"Precision matrix shape: {result.precision_matrix.shape}")
 
-If possible, a small how-to should be provided here, but the [documentation](#documentation) is probably more appropriate.
+# Access the adjacency matrix for visualization
+adjacency = result.adjacency_matrix
+```
 
-## <a name="testing">How to test</a>
+### Visualization with NetworkX
 
-The template uses pytest and the test suite can be executed locally via
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
 
-    python -m pytest
+# Create graph from adjacency matrix
+G = nx.from_numpy_array(result.adjacency_matrix.astype(int))
 
-## <a name="actions">Github Actions </a>
+# Relabel nodes with feature names
+if result.feature_names:
+    mapping = {i: name for i, name in enumerate(result.feature_names)}
+    G = nx.relabel_nodes(G, mapping)
 
-### <a name="mkdocs">Documentation with mkdocs </a>
+# Plot
+plt.figure(figsize=(10, 8))
+nx.draw(G, with_labels=True, node_color='lightblue',
+        node_size=500, font_size=10, font_weight='bold')
+plt.title("Estimated Mixed Graph")
+plt.show()
+```
 
-We use mkdocs for building the documentation.
+## <a name="api-reference">API Reference</a>
 
-### Pre-commit
+### Main Functions
 
-With this [workflow](.github/workflows/pre-commit.yml) the pre-commit rules, specified in the [.pre-commit-config.yaml] are executed.
+#### `mixed_graph_nonpara(data, *, verbose=True, n_lambdas=50, param=0.1, feature_names=None, n_levels_threshold=20)`
 
-To use pre-commit locally, please use
+Estimate mixed graph under nonparanormal (Gaussian copula) assumption. **Recommended for most use cases.**
 
-    pre-commit install
+**Parameters:**
+- `data`: DataFrame or 2D array of shape (n, d)
+- `verbose`: If True, print warnings and information
+- `n_lambdas`: Length of the glasso path (default: 50)
+- `param`: eBIC dimensionality penalty parameter (default: 0.1)
+- `feature_names`: Optional list of feature names
+- `n_levels_threshold`: Variables with fewer unique values are treated as discrete (default: 20)
 
-### Testing
+**Returns:** `MixedGraphResult` dataclass containing:
+- `precision_matrix`: Estimated precision matrix (partial correlations)
+- `adjacency_matrix`: Boolean adjacency matrix
+- `correlation_matrix`: Sample correlation matrix
+- `n_edges`: Number of edges in the graph
+- `max_degree`: Maximum node degree
+- `initial_mat_singular`: Whether correlation matrix was singular
+- `feature_names`: Node names (if provided)
 
-With this [workflow](.github/workflows/test_package.yml) the tests are executed.
+#### `mixed_graph_gauss(data, **kwargs)`
+
+Same interface as `mixed_graph_nonpara()` but uses Gaussian assumption instead of nonparanormal.
+
+### Helper Functions
+
+- `edgenumber(precision, *, cut=0.0)`: Count edges in precision matrix
+- `omega_select(...)`: Select precision matrix using eBIC
+- `spearman(x, y)`: Compute Spearman's rho
+- `f_hat(x)`: Nonparanormal transformation
+- `npn_pearson(cont, disc)`: Nonparanormal Pearson correlation
+- `adhoc_polyserial(x, y, **kwargs)`: Adhoc polyserial correlation
+
+## <a name="testing">Testing</a>
+
+Run tests with pytest:
+
+```bash
+pytest tests/ -v
+```
+
+With coverage:
+
+```bash
+pytest tests/ --cov=hume --cov-report=html
+```
+
+## <a name="development">Development</a>
+
+### Pre-commit hooks
+
+To use the `pre-commit` hooks, enable them in the venv:
+
+```bash
+pre-commit install
+```
+
+Run hooks for all files:
+
+```bash
+pre-commit run --all-files
+```
+
+Or use make:
+
+```bash
+make pre-commit
+```
+
+## Dependencies
+
+- numpy >= 1.21.0
+- scipy >= 1.7.0
+- scikit-learn >= 1.0.0
+- pandas >= 1.3.0
+
+## References
+
+- Foygel, Rina and Drton, Mathias. (2010). Extended Bayesian Information Criteria for Gaussian Graphical Models. *Advances in Neural Information Processing Systems*, Volume 23, pp. 604–612.
+
+- Liu, Han, Lafferty, John and Wasserman, Larry. (2009). The nonparanormal: Semi-parametric estimation of high dimensional undirected graphs. *Journal of Machine Learning Research* 10(80), 2295–2328.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.

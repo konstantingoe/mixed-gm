@@ -1,8 +1,8 @@
-"""Test for graphical_models/graphs.py."""
+"""Test for hume/graphs.py."""
 
 import pytest
 
-from graphical_models.graphs import Graph
+from hume.graphs import Graph
 
 
 @pytest.mark.parametrize("nodes, edges", [pytest.param(["1", "2", "3"], [("1", "2"), ("2", "3")])])
