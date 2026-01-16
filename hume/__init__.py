@@ -49,7 +49,7 @@ from hume.estimation import (
 )
 
 # Keep the Graph class for backwards compatibility
-from hume.graphs import Graph
+from hume.graphs import PDAG
 
 __all__ = [
     # Main estimation functions
@@ -66,7 +66,7 @@ __all__ = [
     "npn_pearson",
     "adhoc_polyserial",
     # Graph class (legacy)
-    "Graph",
+    "PDAG",
 ]
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

@@ -17,6 +17,7 @@ dependencies = [
     "scipy>=1.7.0",
     "scikit-learn>=1.0.0",
     "pandas>=1.3.0",
+    "networkx>=2.6.0",
 ]
 readme = "README.md"
 dynamic = ["version"]
@@ -80,6 +81,11 @@ lint.ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.lint.pylint]
+max-public-methods = 35
+max-nested-blocks = 10
+
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
