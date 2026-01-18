@@ -27,7 +27,7 @@ from numpy.typing import NDArray
 from scipy import linalg, stats
 from sklearn.covariance import graphical_lasso
 
-from hume.correlation import adhoc_polyserial, spearman
+from hume.correlation import adhoc_polyserial
 
 logger = logging.getLogger(__name__)
 
@@ -164,7 +164,8 @@ def _estimate_mixed_correlation_gauss(
                 rho[i, j] = rho[j, i] = np.corrcoef(x_i, x_j)[0, 1]
             elif is_discrete[i] and is_discrete[j]:
                 # Both discrete: polychoric approximation
-                rho[i, j] = rho[j, i] = 2 * np.sin(np.pi / 6 * spearman(x_i.astype(float), x_j.astype(float)))
+                rho_s = float(stats.spearmanr(x_i.astype(float), x_j.astype(float))[0])  # pyright: ignore[reportArgumentType]
+                rho[i, j] = rho[j, i] = 2 * np.sin(np.pi / 6 * rho_s)
             else:
                 # Mixed: polyserial correlation (using adhoc approach)
                 rho[i, j] = rho[j, i] = adhoc_polyserial(x_i, x_j, n_levels_threshold=n_levels_threshold)
@@ -209,11 +210,12 @@ def _estimate_mixed_correlation_nonpara(
 
             if not is_discrete[i] and not is_discrete[j]:
                 # Both continuous: nonparanormal transformation of Spearman
-                rho_spearman = spearman(x_i, x_j)
+                rho_spearman = float(stats.spearmanr(x_i, x_j)[0])  # pyright: ignore[reportArgumentType]
                 rho[i, j] = rho[j, i] = 2 * np.sin(np.pi / 6 * rho_spearman)
             elif is_discrete[i] and is_discrete[j]:
                 # Both discrete: polychoric approximation
-                rho[i, j] = rho[j, i] = 2 * np.sin(np.pi / 6 * spearman(x_i.astype(float), x_j.astype(float)))
+                rho_s = float(stats.spearmanr(x_i.astype(float), x_j.astype(float))[0])  # pyright: ignore[reportArgumentType]
+                rho[i, j] = rho[j, i] = 2 * np.sin(np.pi / 6 * rho_s)
             else:
                 # Mixed: adhoc polyserial with nonparanormal approach
                 rho[i, j] = rho[j, i] = adhoc_polyserial(x_i, x_j, n_levels_threshold=n_levels_threshold)
@@ -290,7 +292,7 @@ def omega_select(
 
     if partial:
         # Convert to partial correlations
-        omega_standardized = -stats.zscore(omega_hat, axis=None, ddof=1)
+        omega_standardized = -stats.zscore(omega_hat, axis=0, ddof=1)
         # Actually, we want: -cov2cor(omega)
         d_omega = np.sqrt(np.diag(omega_hat))
         omega_standardized = -omega_hat / np.outer(d_omega, d_omega)
@@ -324,7 +326,7 @@ def _run_glasso_path(
 
     for alpha in lambda_path:
         try:
-            _, precision = graphical_lasso(
+            _, precision, _, _ = graphical_lasso(
                 cov_matrix,
                 alpha=alpha,
                 mode="cd",

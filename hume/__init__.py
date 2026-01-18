@@ -38,8 +38,9 @@ from hume.correlation import (
     adhoc_polyserial,
     f_hat,
     npn_pearson,
-    spearman,
+    polychoric_corr,
 )
+
 from hume.estimation import (
     MixedGraphResult,
     edgenumber,
@@ -61,12 +62,12 @@ __all__ = [
     "edgenumber",
     "omega_select",
     # Correlation functions
-    "spearman",
     "f_hat",
     "npn_pearson",
     "adhoc_polyserial",
     # Graph class (legacy)
     "PDAG",
+    "polychoric_corr",
 ]
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
