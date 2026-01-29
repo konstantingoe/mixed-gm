@@ -144,6 +144,8 @@ def polychoric_correlation(x: np.ndarray, y: np.ndarray, max_cor: float = 0.9999
 
         dp = pi_rs_derivative(lower=np.array(lower), upper=np.array(upper), corr=corr)
 
+        # I think currently this is incorrect since the n_rs
+        #  are not necessarily ordered according to the enumeration of thresholds.
         return float(n_rs[i, j] * dp / p)
 
     def score(corr: float) -> float:
