@@ -72,6 +72,17 @@ def npn_pearson(
     return float(np.corrcoef(f_x, disc)[0, 1])
 
 
+def thresholds(disc_var: np.ndarray) -> np.ndarray:
+    """Compute thresholds for a discrete variable."""
+    n = len(disc_var)
+    _, counts = np.unique(disc_var, return_counts=True)
+    cumm_proportions = np.concatenate([[0], np.cumsum(counts / n)])
+
+    # Compute threshold estimates
+    threshold_estimate = stats.norm.ppf(cumm_proportions)
+    return threshold_estimate
+
+
 def adhoc_polyserial(
     x: np.ndarray,
     y: np.ndarray,
@@ -123,17 +134,11 @@ def adhoc_polyserial(
     if verbose:
         logger.info("Computing adhoc polyserial for mixed continuous-discrete pair")
 
-    n = disc_var.shape[0]
-
     # Get cumulative marginal proportions
-    unique_vals, counts = np.unique(disc_var, return_counts=True)
-    cumm_proportions = np.concatenate([[0], np.cumsum(counts / n)])
-
+    unique_vals, _ = np.unique(disc_var, return_counts=True)
     # Compute threshold estimates
-    threshold_estimate = stats.norm.ppf(cumm_proportions)
-
+    threshold_estimate = thresholds(disc_var)
     # Compute denominator
-
     # discrete levels
     values = np.sort(unique_vals.astype(float))
     interior_thresholds = threshold_estimate[1:-1]
@@ -156,7 +161,9 @@ def adhoc_polyserial(
 
 
 def polychoric_corr(x: np.ndarray, y: np.ndarray) -> float:
-    """Compute polychoric correlation estimate for  two discrete variables.
+    """Compute polychoric correlation estimate for two discrete variables.
+
+    Here we use direct root finding of the first order condition of the log-likelihood.
 
     Args:
         x: First discrete/categorical array.
