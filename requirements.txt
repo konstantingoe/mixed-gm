@@ -2,12 +2,10 @@
 #    uv pip compile pyproject.toml --output-file=requirements.txt --annotation-style=line
 joblib==1.5.3             # via scikit-learn
 networkx==3.6.1           # via hume (pyproject.toml)
-numpy==2.4.1              # via pandas, scikit-learn, scipy, hume (pyproject.toml)
-pandas==2.3.3             # via hume (pyproject.toml)
+numpy==2.4.2              # via pandas, scikit-learn, scipy, hume (pyproject.toml)
+pandas==3.0.0             # via hume (pyproject.toml)
 python-dateutil==2.9.0.post0  # via pandas
-pytz==2025.2              # via pandas
 scikit-learn==1.8.0       # via hume (pyproject.toml)
 scipy==1.17.0             # via scikit-learn, hume (pyproject.toml)
 six==1.17.0               # via python-dateutil
 threadpoolctl==3.6.0      # via scikit-learn
-tzdata==2025.3            # via pandas
