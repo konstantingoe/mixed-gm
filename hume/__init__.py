@@ -38,7 +38,9 @@ from hume.correlation import (
     adhoc_polyserial,
     f_hat,
     npn_pearson,
-    polychoric_corr,
+    spearman,
+    PolychoricCorrelation,
+    PolyserialCorrelation,
 )
 
 from hume.estimation import (
@@ -64,10 +66,12 @@ __all__ = [
     # Correlation functions
     "f_hat",
     "npn_pearson",
+    "spearman",
     "adhoc_polyserial",
+    "PolychoricCorrelation",
+    "PolyserialCorrelation",
     # Graph class (legacy)
     "PDAG",
-    "polychoric_corr",
 ]
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
