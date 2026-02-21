@@ -24,13 +24,15 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy import stats
-from collections.abc import Callable
-from scipy.optimize import brentq
+from scipy.optimize import minimize_scalar
+from typing import Literal
 
 if TYPE_CHECKING:
     pass
 
 logger = logging.getLogger(__name__)
+
+_CELL_FLOOR: float = 1e-12  # minimum cell probability to avoid log(0)
 
 # ---------------------------------------------------------------------------
 # Private utility functions
@@ -156,27 +158,6 @@ def _pi_rs_derivative(lower: np.ndarray, upper: np.ndarray, corr: float) -> floa
     )
 
 
-def _find_feasible_interval(
-    score: Callable[[float], float],
-    lo: float = -0.9999,
-    hi: float = 0.9999,
-    max_iter: int = 20,
-) -> tuple[float, float]:
-    """Shrink the search interval until *score* evaluates without error at both ends."""
-    for _ in range(max_iter):
-        try:
-            score(lo)
-            score(hi)
-            return lo, hi
-        except ZeroDivisionError:
-            lo *= 0.9
-            hi *= 0.9
-    raise RuntimeError(
-        "Could not find a feasible correlation interval for brentq. "
-        "Check that the ordinal variables have sufficient overlap."
-    )
-
-
 # ---------------------------------------------------------------------------
 # Abstract base class
 # ---------------------------------------------------------------------------
@@ -259,21 +240,88 @@ class CorrelationMeasure(ABC):
 
 
 class PolychoricCorrelation(CorrelationMeasure):
-    """Maximum-likelihood polychoric correlation between two ordinal variables.
+    r"""Maximum-likelihood polychoric correlation between two ordinal variables.
 
-    Both variables are treated as discretised versions of latent nonparanormal variates.
-    The correlation of those latent variates is estimated by
-    maximising the multinomial log-likelihood via Brent's root-finding method
-    applied to the score equation.
+    Both variables are treated as discretised versions of latent normal variates.
+    The MLE of their latent correlation is found by one of two solvers:
+
+    * ``"brent"`` (**default**) — Direct maximisation of
+      $\\ell(\\rho) = \\sum_{ij} n_{ij}\\log\\pi_{ij}$ via
+      :func:`scipy.optimize.minimize_scalar` with Brent's bounded method.
+      Each function evaluation requires only :func:`_pi_rs` (no derivatives).
+      Converges super-linearly and is consistently faster once the number of
+      ordinal categories exceeds ~3, because the per-evaluation cost grows as
+      $O(k_x \\times k_y)$ CDF calls rather than CDF + PDF calls.
+
+    * ``"newton"`` — Fisher scoring.  Uses the score
+      $S(\\rho) = \\sum_{ij} n_{ij}\\,(\\pi_{ij}'/\\pi_{ij})$ and the empirical
+      Fisher information $\\hat{I}(\\rho) = \\sum_{ij} n_{ij}\\,(\\pi_{ij}'/\\pi_{ij})^2$
+      to iterate $\\rho \\leftarrow \\rho + S/\\hat{I}$ until convergence.
+      Converges quadratically near the MLE and can be ~2× faster than
+      ``"brent"`` for binary variables ($k_x = k_y = 2$), but becomes
+      progressively slower as the category count grows because each iteration
+      requires both :func:`_pi_rs` and :func:`_pi_rs_derivative` per cell.
+      Consider this solver when both variables are binary or ternary.
+
+    **Solver selection guide** (rule of thumb from benchmarks):
+
+    +-------------------+------------------+
+    | Category count    | Recommended      |
+    +===================+==================+
+    | binary (2 × 2)    | ``"newton"``     |
+    +-------------------+------------------+
+    | ternary (3 × 3)   | either           |
+    +-------------------+------------------+
+    | 4+ categories     | ``"brent"``      |
+    +-------------------+------------------+
 
     Args:
         max_cor: Absolute upper bound for the estimated correlation.
             Defaults to 0.9999.
+        solver: Optimisation strategy, ``"brent"`` or ``"newton"``.
+            Defaults to ``"brent"``.
+        max_iter: Maximum Fisher-scoring iterations (ignored for ``"brent"``).
+            Defaults to 100.
+        tol: Convergence tolerance on the absolute score value and step size
+            (ignored for ``"brent"``).
+            Defaults to 1e-10.
 
     Example::
 
         rho = PolychoricCorrelation().fit(x_ord, y_ord).correlation
+        rho = PolychoricCorrelation(solver="newton").fit(x_ord, y_ord).correlation
     """
+
+    def __init__(
+        self,
+        max_cor: float = 0.9999,
+        solver: Literal["newton", "brent"] = "brent",
+        max_iter: int = 100,
+        tol: float = 1e-10,
+    ) -> None:
+        """Initialise the polychoric correlation estimator.
+
+        Args:
+            max_cor: Absolute upper bound for the estimated correlation.
+                Defaults to 0.9999.
+            solver: Optimisation strategy.  ``"brent"`` (default) is faster
+                for variables with 4 or more ordinal categories.
+                ``"newton"`` (Fisher scoring) can be ~2× faster for binary
+                variables but slows down as category count grows.
+            max_iter: Maximum Fisher-scoring iterations; ignored when
+                ``solver="brent"``.  Defaults to 100.
+            tol: Convergence tolerance on the absolute score value and step
+                size; ignored when ``solver="brent"``.  Defaults to 1e-10.
+
+        Raises:
+            ValueError: If *solver* is not ``"newton"`` or ``"brent"``.
+        """
+        super().__init__(max_cor=max_cor)
+        if solver not in {"newton", "brent"}:
+            raise ValueError(f"`solver` must be 'newton' or 'brent', got '{solver}'.")
+        self._solver = solver
+        self._max_iter = max_iter
+        self._tol = tol
 
     def fit(self, x: np.ndarray, y: np.ndarray) -> PolychoricCorrelation:
         """Fit the polychoric correlation model.
@@ -288,7 +336,7 @@ class PolychoricCorrelation(CorrelationMeasure):
 
         Raises:
             ValueError: On invalid or incompatible inputs.
-            RuntimeError: If the root-finding algorithm cannot converge.
+            RuntimeError: If the solver cannot converge.
         """
         x_arr, y_arr = self._prepare(x, y)
         _validate_ordinal(x_arr, "x")
@@ -298,10 +346,11 @@ class PolychoricCorrelation(CorrelationMeasure):
         return self
 
     # ------------------------------------------------------------------
-    # Implementation
+    # Dispatch
     # ------------------------------------------------------------------
 
     def _polychoric(self, x: np.ndarray, y: np.ndarray) -> float:
+        """Build shared data structures, then dispatch to the chosen solver."""
         n = x.size
         ux = np.unique(x)
         uy = np.unique(y)
@@ -315,26 +364,111 @@ class PolychoricCorrelation(CorrelationMeasure):
         tx = _thresholds(x)
         ty = _thresholds(y)
 
-        def _cell_term(i: int, j: int, corr: float) -> float:
-            lower = (float(tx[i]), float(ty[j]))
-            upper = (float(tx[i + 1]), float(ty[j + 1]))
-            p = _pi_rs(lower=lower, upper=upper, corr=corr)
-            if p < 1e-12:
-                if n_rs[i, j] == 0:
-                    return 0.0
-                raise ZeroDivisionError(
-                    f"Bivariate cell probability ≈ 0 for non-empty cell ({i}, {j}). "
-                    "Consider collapsing sparse categories."
+        if self._solver == "newton":
+            return self._polychoric_newton(n_rs, tx, ty, ux, uy)
+        return self._polychoric_brent(n_rs, tx, ty, ux, uy)
+
+    # ------------------------------------------------------------------
+    # Solver: Fisher scoring (Newton-type)
+    # ------------------------------------------------------------------
+
+    def _polychoric_newton(
+        self,
+        n_rs: np.ndarray,
+        tx: np.ndarray,
+        ty: np.ndarray,
+        ux: np.ndarray,
+        uy: np.ndarray,
+    ) -> float:
+        r"""Fisher scoring iteration on the score equation.
+
+        Update rule: $\\rho \\leftarrow \\rho + S(\\rho)/\\hat{I}(\\rho)$
+
+        where $S = \\sum n_{ij}\\,(dp/p)$ is the score and
+        $\\hat{I} = \\sum n_{ij}\\,(dp/p)^2$ is the empirical Fisher information.
+        Both $\\pi_{ij}$ and $\\pi_{ij}'$ are needed per cell per iteration;
+        the step converges quadratically in the neighbourhood of the MLE.
+        """
+        rho = 0.0
+        bound = self._max_cor
+        score_val = 0.0
+
+        for iteration in range(self._max_iter):
+            score_val = 0.0
+            info_val = 0.0
+
+            for i in range(len(ux)):
+                for j in range(len(uy)):
+                    lower = (float(tx[i]), float(ty[j]))
+                    upper = (float(tx[i + 1]), float(ty[j + 1]))
+                    p = max(_pi_rs(lower=lower, upper=upper, corr=rho), _CELL_FLOOR)
+                    dp = _pi_rs_derivative(lower=np.array(lower), upper=np.array(upper), corr=rho)
+                    ratio = dp / p
+                    score_val += n_rs[i, j] * ratio
+                    info_val += n_rs[i, j] * ratio**2
+
+            if abs(score_val) < self._tol:
+                break
+            if info_val < 1e-14:  # nearly flat — cannot determine direction
+                logger.warning(
+                    "Fisher information ≈ 0 at ρ=%.4f after %d iteration(s); returning current estimate.",
+                    rho,
+                    iteration,
                 )
-            dp = _pi_rs_derivative(lower=np.array(lower), upper=np.array(upper), corr=corr)
-            return float(n_rs[i, j] * dp / p)
+                break
 
-        def score(corr: float) -> float:
-            return sum(_cell_term(i, j, corr) for i in range(len(ux)) for j in range(len(uy)))
+            step = score_val / info_val
+            rho_new = float(np.clip(rho + step, -bound, bound))
 
-        a, b = _find_feasible_interval(score)
-        root = brentq(score, a, b)
-        return float(root) if not isinstance(root, tuple) else float(root[0])
+            if abs(rho_new - rho) < self._tol:
+                rho = rho_new
+                break
+            rho = rho_new
+        else:
+            logger.warning(
+                "Fisher scoring did not converge in %d iterations (|score|=%.2e). "
+                "Consider increasing max_iter or switching to solver='brent'.",
+                self._max_iter,
+                abs(score_val),
+            )
+
+        return rho
+
+    # ------------------------------------------------------------------
+    # Solver: direct log-likelihood via Brent's bounded method
+    # ------------------------------------------------------------------
+
+    def _polychoric_brent(
+        self,
+        n_rs: np.ndarray,
+        tx: np.ndarray,
+        ty: np.ndarray,
+        ux: np.ndarray,
+        uy: np.ndarray,
+    ) -> float:
+        r"""Maximise $\\ell(\\rho)$ directly via ``minimize_scalar`` (Brent bounded).
+
+        Each function evaluation costs one :func:`_pi_rs` call per cell.
+        No derivative information is used; convergence is super-linear.
+        Near-zero cell probabilities are floored at *_CELL_FLOOR* so that
+        empty cells never produce ``-inf`` contributions.
+        """
+        bound = self._max_cor
+
+        def neg_log_likelihood(rho: float) -> float:
+            total = 0.0
+            for i in range(len(ux)):
+                for j in range(len(uy)):
+                    if n_rs[i, j] == 0:
+                        continue
+                    lower = (float(tx[i]), float(ty[j]))
+                    upper = (float(tx[i + 1]), float(ty[j + 1]))
+                    p = max(_pi_rs(lower=lower, upper=upper, corr=rho), _CELL_FLOOR)
+                    total += n_rs[i, j] * np.log(p)
+            return -total
+
+        result = minimize_scalar(neg_log_likelihood, bounds=(-bound, bound), method="bounded")
+        return float(result.x)
 
 
 # ---------------------------------------------------------------------------
