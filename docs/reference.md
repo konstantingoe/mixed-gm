@@ -1,24 +1,34 @@
 # API Reference
 
-This is the code documentation for the `hume` package.
+This is the code documentation for the `hume` package, which implements the
+methodology from:
 
-## Main Functions
+> Göbler, K., Drton, M., Mukherjee, S. and Miloschewski, A. (2024).
+> **High-dimensional undirected graphical models for arbitrary mixed data.**
+> *Electronic Journal of Statistics*, 18(1), 2339–2404.
+> <https://doi.org/10.1214/24-EJS2254>
 
-:::hume.estimation.mixed_graph_nonpara
+## Main Classes
 
-:::hume.estimation.mixed_graph_gauss
+:::hume.estimation.SampleCorrelation
 
-## Result Classes
+:::hume.estimation.MixedGraphicalLasso
 
-:::hume.estimation.MixedGraphResult
-
-## Helper Functions
-
-:::hume.estimation.edgenumber
+## Model Selection
 
 :::hume.estimation.omega_select
 
+## Graph Classes
+
+:::hume.graphs.UGRAPH
+
+:::hume.graphs.PDAG
+
 ## Correlation Functions
+
+:::hume.correlation.PolychoricCorrelation
+
+:::hume.correlation.PolyserialCorrelation
 
 :::hume.correlation.spearman
 
@@ -27,6 +37,16 @@ This is the code documentation for the `hume` package.
 :::hume.correlation.npn_pearson
 
 :::hume.correlation.adhoc_polyserial
+
+## Legacy Functions
+
+:::hume.estimation.mixed_graph_nonpara
+
+:::hume.estimation.mixed_graph_gauss
+
+:::hume.estimation.MixedGraphResult
+
+:::hume.estimation.edgenumber
 
 ## Graph Structures
 

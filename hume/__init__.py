@@ -1,28 +1,67 @@
 """HUME: High-dimensional Undirected Mixed graph Estimation.
 
-This package implements the latent Gaussian and latent Gaussian copula
-modeling approaches to learning mixed high-dimensional graphs in a fast
-and easy-to-use manner.
+This package implements the methodology for learning sparse undirected graphical
+models from arbitrary mixed data (any combination of continuous and ordinal
+variables) developed in:
 
-The package can be applied on continuous only (then it boils down to the
-nonparanormal SKEPTIC) and any mix of discrete and continuous variables.
+    Göbler, Konstantin, Drton, Mathias, Mukherjee, Sach and Miloschewski, Anne.
+    "High-dimensional undirected graphical models for arbitrary mixed data."
+    Electronic Journal of Statistics 18(1): 2339–2404, 2024.
+    https://doi.org/10.1214/24-EJS2254
 
-Main Functions:
-    mixed_graph_gauss: Estimate graph under Gaussian assumption.
-    mixed_graph_nonpara: Estimate graph under nonparanormal assumption (recommended).
+The core idea is to map each pair of variables to a latent Pearson correlation
+using pair-type-specific estimators (sin-transform of Spearman for
+continuous–continuous, polyserial for continuous–ordinal, polychoric MLE for
+ordinal–ordinal), then recover the graph structure via the graphical lasso with
+extended BIC model selection.
+
+Main Classes:
+    SampleCorrelation: Estimate the latent sample correlation matrix.
+    MixedGraphicalLasso: Fit the full sparse undirected graphical model.
 
 Example:
+    Generate data from a latent sparse Gaussian model, binarise the first half
+    of the columns, then fit the mixed graphical model.
+
     >>> import numpy as np
     >>> import pandas as pd
-    >>> from hume import mixed_graph_nonpara
-    >>> # Create mixed data
-    >>> n, d = 100, 5
-    >>> continuous = np.random.randn(n, 3)
-    >>> discrete = np.random.binomial(1, 0.5, (n, 2))
-    >>> data = pd.DataFrame(np.hstack([continuous, discrete]))
-    >>> result = mixed_graph_nonpara(data, verbose=False)
+    >>> from scipy import stats
+    >>> from hume import MixedGraphicalLasso
+    >>> rng = np.random.default_rng(0)
+    >>> n, d = 400, 20
+    >>> # Sparse precision matrix (identity + signal on 12 random pairs)
+    >>> precision = np.eye(d)
+    >>> pairs = [(i, j) for i in range(d) for j in range(i + 1, d)]
+    >>> true_edges = set()
+    >>> for idx in rng.choice(len(pairs), size=12, replace=False):
+    ...     i, j = pairs[idx]
+    ...     precision[i, j] = precision[j, i] = 0.5
+    ...     true_edges.add(frozenset((f"x{i}", f"x{j}")))
+    >>> np.fill_diagonal(precision, np.abs(precision).sum(axis=1) + 0.1)
+    >>> # Latent MVN data
+    >>> cov = np.linalg.inv(precision)
+    >>> X = rng.multivariate_normal(np.zeros(d), cov, size=n)
+    >>> # Binarise first half: qbinom(pnorm(scale(x)), size=1, prob=p)
+    >>> n_bin = d // 2
+    >>> p_bin = rng.uniform(0.4, 0.6, size=n_bin)
+    >>> data = pd.DataFrame(X, columns=[f"x{i}" for i in range(d)])
+    >>> for i in range(n_bin):
+    ...     u = stats.norm.cdf(stats.zscore(X[:, i]))
+    ...     data.iloc[:, i] = stats.binom.ppf(u, n=1, p=p_bin[i])
+    >>> mgl = MixedGraphicalLasso().fit(data)
+    >>> print(mgl.n_edges_)
+    >>> recovered = {frozenset(e) for e in mgl.graph_.edges}
+    >>> tp = len(true_edges & recovered)
+    >>> tpr = tp / len(true_edges)
+    >>> fpr = (len(recovered) - tp) / (d * (d - 1) // 2 - len(true_edges))
+    >>> print(f"TPR: {tpr:.2f}  FPR: {fpr:.2f}")
 
 References:
+    Göbler, K., Drton, M., Mukherjee, S. and Miloschewski, A. (2024).
+    High-dimensional undirected graphical models for arbitrary mixed data.
+    Electronic Journal of Statistics, 18(1), 2339–2404.
+    https://doi.org/10.1214/24-EJS2254
+
     Foygel, Rina and Drton, Mathias. (2010).
     Extended Bayesian Information Criteria for Gaussian Graphical Models.
     Advances in Neural Information Processing Systems, Volume 23, pp. 604–612.
@@ -45,20 +84,25 @@ from hume.correlation import (
 
 from hume.estimation import (
     MixedGraphResult,
+    MixedGraphicalLasso,
+    SampleCorrelation,
     edgenumber,
     mixed_graph_gauss,
     mixed_graph_nonpara,
     omega_select,
 )
 
-# Keep the Graph class for backwards compatibility
-from hume.graphs import PDAG
+# Keep the Graph classes available
+from hume.graphs import PDAG, UGRAPH
 
 __all__ = [
-    # Main estimation functions
+    # New class-based API
+    "SampleCorrelation",
+    "MixedGraphicalLasso",
+    # Legacy estimation functions
     "mixed_graph_gauss",
     "mixed_graph_nonpara",
-    # Result container
+    # Legacy result container
     "MixedGraphResult",
     # Helper functions
     "edgenumber",
@@ -70,7 +114,8 @@ __all__ = [
     "adhoc_polyserial",
     "PolychoricCorrelation",
     "PolyserialCorrelation",
-    # Graph class (legacy)
+    # Graph classes
+    "UGRAPH",
     "PDAG",
 ]
 
