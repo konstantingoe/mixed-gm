@@ -3,19 +3,22 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "python-template"
+name = "hume"
 requires-python = ">=3.10.0"
-authors = [
-    { name = "Konstantin Göbler", email = "konstantin.goebler@tum.de" },
-]
+authors = [{ name = "Konstantin Göbler", email = "konstantin.goebler@tum.de" }]
 maintainers = [
     { name = "Konstantin Göbler", email = "konstantin.goebler@tum.de" },
-    {name = "Stephan Haug", email = "stephan.haug@tum.de" },
+    { name = "Stephan Haug", email = "stephan.haug@tum.de" },
 ]
 license = { file = "LICENSE" }
-description = "Apply this template to your python project"
+description = "High-dimensional Undirected Mixed graph Estimation - Python implementation"
 dependencies = [
-    "numpy",]
+    "numpy>=1.21.0",
+    "scipy>=1.7.0",
+    "scikit-learn>=1.0.0",
+    "pandas>=1.3.0",
+    "networkx>=2.6.0",
+]
 readme = "README.md"
 dynamic = ["version"]
 
@@ -25,6 +28,7 @@ dev = [
     "mike",
     "mkdocs-material",
     "mkdocstrings[python]",
+    "mypy",
     "pip-tools",
     "pre-commit",
     "pytest",
@@ -34,7 +38,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["graphical_models*"]
+include = ["hume*"]
 
 [tool.setuptools.dynamic]
 version = { file = "VERSION" }
@@ -44,25 +48,44 @@ preview = true
 
 lint.select = [
     "C90", # McCabe
-    "E", # pycodestyle
-    "F", # pyflakes
-    "W", # pycodestyle
-    "D", # pydocstyle
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "W",   # pycodestyle
+    "D",   # pydocstyle
     "ISC", # flake8-implicit-str-concat
-    "N", # pep8-naming
+    "N",   # pep8-naming
     "NPY", # flake8-numpy
-    "PL", # pylint
+    "PL",  # pylint
     "PTH", # flake8-use-pathlib
     "SIM", # flake8-simplify
-    "TD", # flake8-todos
-    "UP", # pyupgrade
+    "TD",  # flake8-todos
+    "UP",  # pyupgrade
 ]
 line-length = 120
 lint.extend-unfixable = ["ISC"]
-ignore = ["ISC003"]
+lint.ignore = [
+    "ISC003",  # Explicit string concatenation
+    "PLR0913", # Too many arguments (common for config functions)
+    "PLR0914", # Too many local variables (acceptable in numerical code)
+    "PLR2004", # Magic value in comparison (acceptable for numerical thresholds)
+    "PLR6104", # Augmented assignment (not always clearer)
+    "PLR6301", # Method could be static (acceptable in test classes)
+    "ISC002",  # Implicitly concatenated string over multiple lines (acceptable for readability)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "NPY002",
+    "D",
+] # Allow legacy numpy random API and skip docstrings in tests
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.lint.pylint]
+max-public-methods = 35
+max-nested-blocks = 10
+
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
@@ -71,7 +94,11 @@ max-complexity = 10
 allow-multiline = false
 
 [tool.pytest.ini_options]
-testpaths = [
-    "tests",
-    "graphical_models",
-]
+testpaths = ["tests", "hume"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+strict_optional = true

@@ -1,20 +1,20 @@
-site_name : Graphical models documentation
+site_name: HUME - Mixed Graph Estimation
 
-repo_url: https://github.com/math-stat/python-project-template
+repo_url: https://github.com/konstantingoe/mixed-gm
 
 theme:
   name: material
   locale: en
 
 extra:
-    version:
-        default: latest
-        provider: mike
+  version:
+    default: latest
+    provider: mike
 
 plugins:
-    - mkdocstrings
-    - mike:
-        canonical_version: latest
+  - mkdocstrings
+  - mike:
+      canonical_version: latest
 
 nav:
   - index.md
