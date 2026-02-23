@@ -47,7 +47,3 @@ methodology from:
 :::hume.estimation.MixedGraphResult
 
 :::hume.estimation.edgenumber
-
-## Graph Structures
-
-:::hume.graphs.Graph
