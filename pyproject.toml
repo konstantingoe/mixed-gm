@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "hume"
@@ -30,7 +30,6 @@ dev = [
     "mkdocs-material",
     "mkdocstrings[python]",
     "mypy",
-    "pip-tools",
     "pre-commit",
     "pytest",
     "pytest-cov",
@@ -38,11 +37,8 @@ dev = [
     "uv",
 ]
 
-[tool.setuptools.packages.find]
-include = ["hume*"]
-
-[tool.setuptools.dynamic]
-version = { file = "VERSION" }
+[tool.hatch.version]
+path = "hume/__init__.py"
 
 [tool.ruff]
 preview = true

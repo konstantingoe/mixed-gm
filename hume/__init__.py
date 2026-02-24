@@ -71,6 +71,8 @@ References:
     undirected graphs. Journal of Machine Learning Research 10(80), 2295–2328.
 """
 
+__version__ = "0.0.1"
+
 import logging
 
 from hume.correlation import (
