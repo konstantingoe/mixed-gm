@@ -33,7 +33,7 @@ Given a high-dimensional dataset with continuous and/or ordinal variables, **hum
 estimates an undirected graph by:
 
 1. **Estimating a latent correlation matrix** using pair-type-specific, rank-based estimators:
-   - *continuous – continuous*: Spearman sin-transform
+   - *continuous – continuous*: Spearman sine-transform
      $\hat{\sigma} = 2\sin\!\bigl(\tfrac{\pi}{6}\hat{\rho}_S\bigr)$
    - *continuous – ordinal*: ad-hoc polyserial correlation
      (`PolyserialCorrelation`)
@@ -42,7 +42,7 @@ estimates an undirected graph by:
 
 2. **Fitting the graphical lasso** over a log-spaced regularisation path.
 
-3. **Selecting the sparsity level** that minimises the extended BIC (eBIC).
+3. **Selecting the sparsity level** that minimizes the extended BIC (eBIC).
 
 4. **Returning the estimated precision matrix and a `UGRAPH`** of the
    conditional independence structure.
@@ -56,14 +56,14 @@ trailing underscore).
 ### From source
 
 ```bash
-git clone https://github.com/konstantingoe/mixed-gm.git
-cd mixed-gm
-pip install -e .
+pip install hume
 ```
 
 ### Development installation
 
 ```bash
+git clone https://github.com/konstantingoe/mixed-gm.git
+cd mixed-gm
 pip install -e ".[dev]"
 ```
 
@@ -75,7 +75,7 @@ make sync-venv
 
 ## Quick Start
 
-Generate latent continuous data from a sparse Gaussian model, binarise the first
+Generate latent continuous data from a sparse nonparanormal model, binarize the first
 half of the columns via a probit transform, then fit the mixed graphical model and
 evaluate against the known truth.
 
@@ -103,6 +103,7 @@ np.fill_diagonal(precision, np.abs(precision).sum(axis=1) + 0.1)
 # --- Latent multivariate normal data ----------------------------------------
 cov = np.linalg.inv(precision)
 X = rng.multivariate_normal(np.zeros(d), cov, size=n)
+X = np.sign(X) * np.power(np.abs(X), 1.5)  # nonparanormal transform
 
 # --- Binarise first half of columns (probit / quantile transform) -----------
 # Mirrors the R idiom: data[,i] <- qbinom(pnorm(scale(X[,i])), size=1, prob=p)
@@ -130,16 +131,7 @@ print(f"TPR: {tpr:.2f}  FPR: {fpr:.2f}")
 ### Visualising the estimated graph
 
 ```python
-import networkx as nx
-import matplotlib.pyplot as plt
-
-nxg = mgl.graph_.to_networkx()
-plt.figure(figsize=(8, 6))
-nx.draw(nxg, with_labels=True, node_color="steelblue", font_color="white",
-        node_size=600, font_size=9, edge_color="grey")
-plt.title("Estimated mixed graphical model")
-plt.tight_layout()
-plt.show()
+mgl.graph_.show()
 ```
 
 ## API
@@ -159,22 +151,22 @@ MixedGraphicalLasso(
 )
 ```
 
-| Fitted attribute      | Description                                                                     |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `precision_matrix_`   | Estimated precision matrix (partial correlations on diagonal) as `pd.DataFrame` |
-| `correlation_matrix_` | Latent correlation matrix as `pd.DataFrame`                                     |
-| `graph_`              | Estimated conditional independence graph as `UGRAPH`                            |
-| `alpha_`              | Selected regularisation parameter                                               |
-| `ebic_scores_`        | Full eBIC array along the path                                                  |
-| `singular_`           | `True` if the correlation matrix required PD projection                         |
-| `feature_names_`      | List of variable names                                                          |
-| `n_edges_`            | Number of edges (raises `RuntimeError` if not fitted)                           |
+| Fitted attribute      | Description                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `precision_matrix_`   | Estimated precision matrix (partial correlations on off-diagonal) as `pd.DataFrame` |
+| `correlation_matrix_` | Latent correlation matrix as `pd.DataFrame`                                         |
+| `graph_`              | Estimated conditional independence graph as `UGRAPH`                                |
+| `alpha_`              | Selected regularisation parameter                                                   |
+| `ebic_scores_`        | Full eBIC array along the path                                                      |
+| `singular_`           | `True` if the correlation matrix required PD projection                             |
+| `feature_names_`      | List of variable names                                                              |
+| `n_edges_`            | Number of edges (raises `RuntimeError` if not fitted)                               |
 
 #### `SampleCorrelation`
 
 Estimates the latent correlation matrix only, without fitting the graphical model.
 Useful when you want to inspect or pre-process the correlation matrix before
-running your own penalised estimator.
+running your own penalized estimator.
 
 ```python
 sc = SampleCorrelation(n_levels_threshold=20).fit(data)
