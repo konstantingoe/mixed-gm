@@ -6,7 +6,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Tests](https://img.shields.io/badge/tests-pytest-brightgreen)](https://github.com/konstantingoe/mixed-gm/actions)
 
-**hume** is a Python package for learning sparse undirected graphical models from
+**hume** (**H**ighdimensional **U**ndirected **M**ixed Graph **E**stimation) is a Python package for learning sparse undirected graphical models from
 arbitrary mixed data — any combination of continuous and ordinal variables.
 It is built upon my old [hume R package](https://github.com/konstantingoe/hume) and implements the methodology developed in:
 
@@ -34,7 +34,7 @@ estimates an undirected graph by:
 
 1. **Estimating a latent correlation matrix** using pair-type-specific, rank-based estimators:
    - *continuous – continuous*: Spearman sine-transform
-     $\hat{\sigma} = 2\sin\!\bigl(\tfrac{\pi}{6}\hat{\rho}_S\bigr)$
+     $\hat{\sigma} = 2\sin\bigl(\tfrac{\pi}{6}\hat{\rho}_S\bigr)$
    - *continuous – ordinal*: ad-hoc polyserial correlation
      (`PolyserialCorrelation`)
    - *ordinal – ordinal*: maximum-likelihood polychoric correlation
