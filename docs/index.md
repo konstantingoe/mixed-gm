@@ -1,10 +1,10 @@
-# HUME: High-dimensional Undirected Mixed graph Estimation
+# HUMPY: High-dimensional Undirected Mixed graph estimation in PYthon
 
-This site contains the documentation for the `hume` Python package.
+This site contains the documentation for the `humpy` Python package.
 
 ## Overview
 
-**hume** implements the methodology for learning sparse undirected graphical models
+**humpy** implements the methodology for learning sparse undirected graphical models
 from arbitrary mixed data (any combination of continuous and ordinal variables)
 presented in:
 
@@ -26,7 +26,7 @@ columns, then recover the graph.
 import numpy as np
 import pandas as pd
 from scipy import stats
-from hume import MixedGraphicalLasso
+from humpy import MixedGraphicalLasso
 
 rng = np.random.default_rng(0)
 n, d = 400, 20

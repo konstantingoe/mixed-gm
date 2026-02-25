@@ -1,6 +1,6 @@
 # API Reference
 
-This is the code documentation for the `hume` package, which implements the
+This is the code documentation for the `humpy` package, which implements the
 methodology from:
 
 > Göbler, K., Drton, M., Mukherjee, S. and Miloschewski, A. (2024).
@@ -10,40 +10,38 @@ methodology from:
 
 ## Main Classes
 
-:::hume.estimation.SampleCorrelation
+:::humpy.estimation.SampleCorrelation
 
-:::hume.estimation.MixedGraphicalLasso
+:::humpy.estimation.MixedGraphicalLasso
 
 ## Model Selection
 
-:::hume.estimation.omega_select
+:::humpy.estimation.omega_select
 
 ## Graph Classes
 
-:::hume.graphs.UGRAPH
-
-:::hume.graphs.PDAG
+:::humpy.graphs.UGRAPH
 
 ## Correlation Functions
 
-:::hume.correlation.PolychoricCorrelation
+:::humpy.correlation.PolychoricCorrelation
 
-:::hume.correlation.PolyserialCorrelation
+:::humpy.correlation.PolyserialCorrelation
 
-:::hume.correlation.spearman
+:::humpy.correlation.spearman
 
-:::hume.correlation.f_hat
+:::humpy.correlation.f_hat
 
-:::hume.correlation.npn_pearson
+:::humpy.correlation.npn_pearson
 
-:::hume.correlation.adhoc_polyserial
+:::humpy.correlation.adhoc_polyserial
 
 ## Legacy Functions
 
-:::hume.estimation.mixed_graph_nonpara
+:::humpy.estimation.mixed_graph_nonpara
 
-:::hume.estimation.mixed_graph_gauss
+:::humpy.estimation.mixed_graph_gauss
 
-:::hume.estimation.MixedGraphResult
+:::humpy.estimation.MixedGraphResult
 
-:::hume.estimation.edgenumber
+:::humpy.estimation.edgenumber

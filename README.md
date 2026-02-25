@@ -1,4 +1,4 @@
-# HUME: High-dimensional Undirected Mixed graph Estimation
+# HUMPY: High-dimensional Undirected Mixed graph estimation in PYthon
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -6,9 +6,9 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Tests](https://img.shields.io/badge/tests-pytest-brightgreen)](https://github.com/konstantingoe/mixed-gm/actions)
 
-**hume** (**H**ighdimensional **U**ndirected **M**ixed Graph **E**stimation) is a Python package for learning sparse undirected graphical models from
+**humpy** (**H**igh-dimensional **U**ndirected **M**ixed graph estimation in **PY**thon) is a Python package for learning sparse undirected graphical models from
 arbitrary mixed data — any combination of continuous and ordinal variables.
-It is built upon my old [hume R package](https://github.com/konstantingoe/hume) and implements the methodology developed in:
+It is built upon the [hume R package](https://github.com/konstantingoe/hume) and implements the methodology developed in:
 
 > Göbler, K., Drton, M., Mukherjee, S. and Miloschewski, A. (2024).
 > **High-dimensional undirected graphical models for arbitrary mixed data.**
@@ -29,7 +29,7 @@ It is built upon my old [hume R package](https://github.com/konstantingoe/hume) 
 
 ## Overview
 
-Given a high-dimensional dataset with continuous and/or ordinal variables, **hume**
+Given a high-dimensional dataset with continuous and/or ordinal variables, **humpy**
 estimates an undirected graph by:
 
 1. **Estimating a latent correlation matrix** using pair-type-specific, rank-based estimators:
@@ -56,7 +56,7 @@ trailing underscore).
 ### From source
 
 ```bash
-pip install hume
+pip install humpy
 ```
 
 ### Development installation
@@ -83,7 +83,7 @@ evaluate against the known truth.
 import numpy as np
 import pandas as pd
 from scipy import stats
-from hume import MixedGraphicalLasso
+from humpy import MixedGraphicalLasso
 
 rng = np.random.default_rng(0)
 n, d = 400, 20
@@ -182,14 +182,11 @@ Returns `(selected_omega, selected_alpha, ebic_scores)`.
 
 ### Graph classes
 
-| Class        | Description                                                        |
-| ------------ | ------------------------------------------------------------------ |
-| `UGRAPH`     | Undirected graph — the output type of `MixedGraphicalLasso`        |
-| `PDAG`       | Partially directed acyclic graph (mixed directed/undirected edges) |
-| `DAG`        | Directed acyclic graph                                             |
-| `LayeredDAG` | DAG with an explicit layer structure                               |
+| Class    | Description                                                 |
+| -------- | ----------------------------------------------------------- |
+| `UGRAPH` | Undirected graph — the output type of `MixedGraphicalLasso` |
 
-All graph classes share a common interface: `nodes`, `edges`, `num_nodes`,
+`UGRAPH` exposes: `nodes`, `edges`, `num_nodes`,
 `num_edges`, `adjacency_matrix`, `from_pandas_adjacency()`, `to_networkx()`,
 `remove_edge()`, `remove_node()`, `copy()`.
 
@@ -208,7 +205,7 @@ All graph classes share a common interface: `nodes`, `edges`, `num_nodes`,
 The original function-based API is preserved for backward compatibility:
 
 ```python
-from hume import mixed_graph_nonpara, mixed_graph_gauss
+from humpy import mixed_graph_nonpara, mixed_graph_gauss
 
 result = mixed_graph_nonpara(data, param=0.1)
 # result.precision_matrix, result.adjacency_matrix,
@@ -219,11 +216,11 @@ result = mixed_graph_nonpara(data, param=0.1)
 
 ```
 mixed-gm/
-├── hume/
+├── humpy/
 │   ├── __init__.py          # public API and package docstring
 │   ├── estimation.py        # SampleCorrelation, MixedGraphicalLasso, omega_select
 │   ├── correlation.py       # PolychoricCorrelation, PolyserialCorrelation, …
-│   └── graphs.py            # UGRAPH, PDAG, DAG, LayeredDAG
+│   └── graphs.py            # UGRAPH
 ├── tests/
 │   ├── test_estimation.py   # tests for estimation module
 │   ├── test_correlation.py  # tests for correlation module
@@ -246,7 +243,7 @@ pytest tests/ -v
 With coverage report:
 
 ```bash
-pytest tests/ --cov=hume --cov-report=html
+pytest tests/ --cov=humpy --cov-report=html
 ```
 
 Or via Make:
@@ -274,8 +271,8 @@ mkdocs build   # static site in site/
 ### Linting and type checking
 
 ```bash
-ruff check hume/     # linting
-mypy hume/           # static type checking
+ruff check humpy/     # linting
+mypy humpy/           # static type checking
 ```
 
 ## References
