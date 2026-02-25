@@ -1,4 +1,4 @@
-#Makefile for humpy project
+#Makefile for humlpy project
 
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
