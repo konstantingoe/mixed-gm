@@ -26,46 +26,46 @@ kiwisolver==1.4.9         # via matplotlib
 librt==0.8.1              # via mypy
 markdown==3.10.2          # via mkdocs, mkdocs-autorefs, mkdocs-material, mkdocstrings, pymdown-extensions
 markupsafe==3.0.3         # via jinja2, mkdocs, mkdocs-autorefs, mkdocstrings
-matplotlib==3.10.8        # via humpy (pyproject.toml)
+matplotlib==3.10.8        # via humlpy (pyproject.toml)
 mergedeep==1.3.4          # via mkdocs, mkdocs-get-deps
-mike==2.1.3               # via humpy (pyproject.toml)
-mkdocs==1.6.1             # via mike, mkdocs-autorefs, mkdocs-material, mkdocstrings, humpy (pyproject.toml)
+mike==2.1.3               # via humlpy (pyproject.toml)
+mkdocs==1.6.1             # via mike, mkdocs-autorefs, mkdocs-material, mkdocstrings, humlpy (pyproject.toml)
 mkdocs-autorefs==1.4.4    # via mkdocstrings, mkdocstrings-python
 mkdocs-get-deps==0.2.0    # via mkdocs
-mkdocs-material==9.7.3    # via humpy (pyproject.toml)
+mkdocs-material==9.7.3    # via humlpy (pyproject.toml)
 mkdocs-material-extensions==1.3.1  # via mkdocs-material
-mkdocstrings==1.0.3       # via mkdocstrings-python, humpy (pyproject.toml)
+mkdocstrings==1.0.3       # via mkdocstrings-python, humlpy (pyproject.toml)
 mkdocstrings-python==2.0.3  # via mkdocstrings
-mypy==1.19.1              # via humpy (pyproject.toml)
+mypy==1.19.1              # via humlpy (pyproject.toml)
 mypy-extensions==1.1.0    # via mypy
-networkx==3.6.1           # via humpy (pyproject.toml)
+networkx==3.6.1           # via humlpy (pyproject.toml)
 nodeenv==1.10.0           # via pre-commit
-numpy==2.4.2              # via contourpy, matplotlib, pandas, scikit-learn, scipy, humpy (pyproject.toml)
+numpy==2.4.2              # via contourpy, matplotlib, pandas, scikit-learn, scipy, humlpy (pyproject.toml)
 packaging==26.0           # via matplotlib, mkdocs, pytest
 paginate==0.5.7           # via mkdocs-material
-pandas==3.0.1             # via humpy (pyproject.toml)
+pandas==3.0.1             # via humlpy (pyproject.toml)
 pathspec==1.0.4           # via mkdocs, mypy
 pillow==12.1.1            # via matplotlib
 platformdirs==4.9.2       # via mkdocs-get-deps, virtualenv
 pluggy==1.6.0             # via pytest, pytest-cov
-pre-commit==4.5.1         # via humpy (pyproject.toml)
+pre-commit==4.5.1         # via humlpy (pyproject.toml)
 pygments==2.19.2          # via mkdocs-material, pytest
 pymdown-extensions==10.21  # via mkdocs-material, mkdocstrings
 pyparsing==3.3.2          # via matplotlib, mike
-pytest==9.0.2             # via pytest-cov, humpy (pyproject.toml)
-pytest-cov==7.0.0         # via humpy (pyproject.toml)
+pytest==9.0.2             # via pytest-cov, humlpy (pyproject.toml)
+pytest-cov==7.0.0         # via humlpy (pyproject.toml)
 python-dateutil==2.9.0.post0  # via ghp-import, matplotlib, pandas
 pyyaml==6.0.3             # via mike, mkdocs, mkdocs-get-deps, pre-commit, pymdown-extensions, pyyaml-env-tag
 pyyaml-env-tag==1.1       # via mike, mkdocs
 requests==2.32.5          # via mkdocs-material
-ruff==0.15.2              # via humpy (pyproject.toml)
-scikit-learn==1.8.0       # via humpy (pyproject.toml)
-scipy==1.17.1             # via scikit-learn, humpy (pyproject.toml)
+ruff==0.15.2              # via humlpy (pyproject.toml)
+scikit-learn==1.8.0       # via humlpy (pyproject.toml)
+scipy==1.17.1             # via scikit-learn, humlpy (pyproject.toml)
 six==1.17.0               # via python-dateutil
 threadpoolctl==3.6.0      # via scikit-learn
 typing-extensions==4.15.0  # via mypy
 urllib3==2.6.3            # via requests
-uv==0.10.6                # via humpy (pyproject.toml)
+uv==0.10.6                # via humlpy (pyproject.toml)
 verspec==0.1.0            # via mike
 virtualenv==20.39.0       # via pre-commit
 watchdog==6.0.0           # via mkdocs

@@ -33,8 +33,8 @@ from numpy.typing import NDArray
 from scipy import linalg, stats
 from sklearn.covariance import graphical_lasso
 
-from humpy.correlation import PolychoricCorrelation, PolyserialCorrelation
-from humpy.graphs import UGRAPH
+from humlpy.correlation import PolychoricCorrelation, PolyserialCorrelation
+from humlpy.graphs import UGRAPH
 
 logger = logging.getLogger(__name__)
 
@@ -233,9 +233,9 @@ class SampleCorrelation:
     * **continuous - continuous**: Spearman sin-transform
       :math:`\hat{\sigma} = 2 \sin(\pi/6 \cdot \hat{\rho}_S)`.
     * **continuous - ordinal**: ad-hoc polyserial correlation via
-      :class:`~humpy.correlation.PolyserialCorrelation`.
+      :class:`~humlpy.correlation.PolyserialCorrelation`.
     * **ordinal - ordinal**: maximum-likelihood polychoric correlation via
-      :class:`~humpy.correlation.PolychoricCorrelation`.
+      :class:`~humlpy.correlation.PolychoricCorrelation`.
 
     After calling :meth:`fit`, the estimated matrix is available as
     :attr:`correlation_matrix_`.
@@ -343,7 +343,7 @@ class SampleCorrelation:
 class MixedGraphicalLasso:
     r"""Sparse Gaussian graphical model for mixed continuous/ordinal data.
 
-    Estimates a precision matrix and the associated :class:`~humpy.graphs.UGRAPH`
+    Estimates a precision matrix and the associated :class:`~humlpy.graphs.UGRAPH`
     by:
 
     1. Computing the sample correlation matrix via :class:`SampleCorrelation`.

@@ -1,11 +1,11 @@
-"""Tests for humpy/graphs.py."""
+"""Tests for humlpy/graphs.py."""
 
 import networkx as nx
 import numpy as np
 import pandas as pd
 import pytest
 
-from humpy.graphs import GRAPH, UGRAPH
+from humlpy.graphs import GRAPH, UGRAPH
 
 
 class TestUGRAPH:

@@ -1,4 +1,4 @@
-"""HUMPY: High-dimensional Undirected Mixed graph estimation in PYthon.
+"""HUMLPY: High-dimensional Undirected Mixed graph Learning in PYthon.
 
 This package implements the methodology for learning sparse undirected graphical
 models from arbitrary mixed data (any combination of continuous and ordinal
@@ -26,7 +26,7 @@ Example:
     >>> import numpy as np
     >>> import pandas as pd
     >>> from scipy import stats
-    >>> from humpy import MixedGraphicalLasso
+    >>> from humlpy import MixedGraphicalLasso
     >>> rng = np.random.default_rng(0)
     >>> n, d = 400, 20
     >>> # Sparse precision matrix (identity + signal on 12 random pairs)
@@ -77,7 +77,7 @@ __version__ = "0.1.0"
 
 import logging
 
-from humpy.correlation import (
+from humlpy.correlation import (
     adhoc_polyserial,
     f_hat,
     npn_pearson,
@@ -86,7 +86,7 @@ from humpy.correlation import (
     PolyserialCorrelation,
 )
 
-from humpy.estimation import (
+from humlpy.estimation import (
     MixedGraphResult,
     MixedGraphicalLasso,
     SampleCorrelation,
@@ -97,7 +97,7 @@ from humpy.estimation import (
 )
 
 # Keep the Graph classes available
-from humpy.graphs import UGRAPH
+from humlpy.graphs import UGRAPH
 
 __all__ = [
     # New class-based API

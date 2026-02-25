@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
-name = "humpy"
+name = "humlpy"
 requires-python = ">=3.10.0"
 authors = [
     { name = "Konstantin Göbler", email = "konstantingoebler@gmail.com" },
@@ -13,7 +13,7 @@ maintainers = [
 ]
 license = "MIT"
 license-files = ["LICENSE"]
-description = "High-dimensional Undirected Mixed graph estimation in PYthon"
+description = "High-dimensional Undirected Mixed graph Learning in PYthon"
 keywords = [
     "graphical models",
     "mixed data",
@@ -65,10 +65,10 @@ dev = [
 ]
 
 [tool.hatch.version]
-path = "humpy/__init__.py"
+path = "humlpy/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["humpy"]
+packages = ["humlpy"]
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -132,7 +132,7 @@ max-complexity = 10
 allow-multiline = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "humpy"]
+testpaths = ["tests", "humlpy"]
 
 [tool.mypy]
 python_version = "3.10"

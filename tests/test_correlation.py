@@ -1,9 +1,9 @@
-"""Tests for humpy correlation functions."""
+"""Tests for humlpy correlation functions."""
 
 import numpy as np
 import pytest
 
-from humpy.correlation import (
+from humlpy.correlation import (
     PolychoricCorrelation,
     PolyserialCorrelation,
     adhoc_polyserial,

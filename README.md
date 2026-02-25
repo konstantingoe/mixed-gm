@@ -1,4 +1,4 @@
-# HUMPY: High-dimensional Undirected Mixed graph estimation in PYthon
+# HUMLPY: High-dimensional Undirected Mixed graph Learning in PYthon
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -6,7 +6,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Tests](https://img.shields.io/badge/tests-pytest-brightgreen)](https://github.com/konstantingoe/mixed-gm/actions)
 
-**humpy** (**H**igh-dimensional **U**ndirected **M**ixed graph estimation in **PY**thon) is a Python package for learning sparse undirected graphical models from
+**humlpy** (**H**igh-dimensional **U**ndirected **M**ixed graph **L**earning in **PY**thon) is a Python package for learning sparse undirected graphical models from
 arbitrary mixed data — any combination of continuous and ordinal variables.
 It is built upon the [hume R package](https://github.com/konstantingoe/hume) and implements the methodology developed in:
 
@@ -29,7 +29,7 @@ It is built upon the [hume R package](https://github.com/konstantingoe/hume) and
 
 ## Overview
 
-Given a high-dimensional dataset with continuous and/or ordinal variables, **humpy**
+Given a high-dimensional dataset with continuous and/or ordinal variables, **humlpy**
 estimates an undirected graph by:
 
 1. **Estimating a latent correlation matrix** using pair-type-specific, rank-based estimators:
@@ -56,7 +56,7 @@ trailing underscore).
 ### From source
 
 ```bash
-pip install humpy
+pip install humlpy
 ```
 
 ### Development installation
@@ -83,7 +83,7 @@ evaluate against the known truth.
 import numpy as np
 import pandas as pd
 from scipy import stats
-from humpy import MixedGraphicalLasso
+from humlpy import MixedGraphicalLasso
 
 rng = np.random.default_rng(0)
 n, d = 400, 20
@@ -205,7 +205,7 @@ Returns `(selected_omega, selected_alpha, ebic_scores)`.
 The original function-based API is preserved for backward compatibility:
 
 ```python
-from humpy import mixed_graph_nonpara, mixed_graph_gauss
+from humlpy import mixed_graph_nonpara, mixed_graph_gauss
 
 result = mixed_graph_nonpara(data, param=0.1)
 # result.precision_matrix, result.adjacency_matrix,
@@ -216,7 +216,7 @@ result = mixed_graph_nonpara(data, param=0.1)
 
 ```
 mixed-gm/
-├── humpy/
+├── humlpy/
 │   ├── __init__.py          # public API and package docstring
 │   ├── estimation.py        # SampleCorrelation, MixedGraphicalLasso, omega_select
 │   ├── correlation.py       # PolychoricCorrelation, PolyserialCorrelation, …
@@ -243,7 +243,7 @@ pytest tests/ -v
 With coverage report:
 
 ```bash
-pytest tests/ --cov=humpy --cov-report=html
+pytest tests/ --cov=humlpy --cov-report=html
 ```
 
 Or via Make:
@@ -271,8 +271,8 @@ mkdocs build   # static site in site/
 ### Linting and type checking
 
 ```bash
-ruff check humpy/     # linting
-mypy humpy/           # static type checking
+ruff check humlpy/     # linting
+mypy humlpy/           # static type checking
 ```
 
 ## References

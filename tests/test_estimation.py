@@ -1,4 +1,4 @@
-"""Tests for humpy estimation module.
+"""Tests for humlpy estimation module.
 
 Covers:
     - SampleCorrelation: pairwise dispatch, symmetry, unit diagonal
@@ -15,14 +15,14 @@ import pytest
 from scipy import stats
 from sklearn.covariance import graphical_lasso
 
-from humpy.estimation import (
+from humlpy.estimation import (
     MixedGraphicalLasso,
     SampleCorrelation,
     edgenumber,
     omega_select,
 )
-from humpy.graphs import UGRAPH
-from humpy.correlation import PolychoricCorrelation, PolyserialCorrelation
+from humlpy.graphs import UGRAPH
+from humlpy.correlation import PolychoricCorrelation, PolyserialCorrelation
 
 
 # ---------------------------------------------------------------------------
