@@ -53,10 +53,16 @@ trailing underscore).
 
 ## Installation
 
+```bash
+pip install humlpy
+```
+
 ### From source
 
 ```bash
-pip install humlpy
+git clone https://github.com/konstantingoe/mixed-gm.git
+cd mixed-gm
+pip install -e .
 ```
 
 ### Development installation
