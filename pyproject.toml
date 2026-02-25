@@ -56,11 +56,13 @@ dev = [
     "mike",
     "mkdocs-material",
     "mkdocstrings[python]",
+    "build",
     "mypy",
     "pre-commit",
     "pytest",
     "pytest-cov",
     "ruff",
+    "twine",
     "uv",
 ]
 
