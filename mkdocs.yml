@@ -1,10 +1,21 @@
-site_name: HUME - Mixed Graph Estimation
+site_name: HUMLPY - Mixed Graph Learning
 
 repo_url: https://github.com/konstantingoe/mixed-gm
+site_url: https://konstantingoe.github.io/mixed-gm/
 
 theme:
   name: material
-  locale: en
+  highlightjs: true
+  custom_dir: overrides
+  color_mode: auto
+  hljs_languages:
+    - python
+  include_sidebar: true
+  features:
+    - navigation.expand
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.preview
 
 extra:
   version:
@@ -12,9 +23,23 @@ extra:
     provider: mike
 
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
+      enable_inventory: true
+  - search
   - mike:
       canonical_version: latest
+
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.magiclink
+  - codehilite:
+      guess_lang: false
 
 nav:
   - index.md

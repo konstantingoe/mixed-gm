@@ -1,4 +1,4 @@
-"""HUME: High-dimensional Undirected Mixed graph Estimation.
+"""HUMLPY: High-dimensional Undirected Mixed graph Learning in PYthon.
 
 This package implements the methodology for learning sparse undirected graphical
 models from arbitrary mixed data (any combination of continuous and ordinal
@@ -10,7 +10,7 @@ variables) developed in:
     https://doi.org/10.1214/24-EJS2254
 
 The core idea is to map each pair of variables to a latent Pearson correlation
-using pair-type-specific estimators (sin-transform of Spearman for
+using pair-type-specific estimators (sine-transform of Spearman for
 continuous–continuous, polyserial for continuous–ordinal, polychoric MLE for
 ordinal–ordinal), then recover the graph structure via the graphical lasso with
 extended BIC model selection.
@@ -26,7 +26,7 @@ Example:
     >>> import numpy as np
     >>> import pandas as pd
     >>> from scipy import stats
-    >>> from hume import MixedGraphicalLasso
+    >>> from humlpy import MixedGraphicalLasso
     >>> rng = np.random.default_rng(0)
     >>> n, d = 400, 20
     >>> # Sparse precision matrix (identity + signal on 12 random pairs)
@@ -41,6 +41,8 @@ Example:
     >>> # Latent MVN data
     >>> cov = np.linalg.inv(precision)
     >>> X = rng.multivariate_normal(np.zeros(d), cov, size=n)
+    >>> X = np.sign(X) * np.power(np.abs(X), 1.5)  # nonparanormal transform
+
     >>> # Binarise first half: qbinom(pnorm(scale(x)), size=1, prob=p)
     >>> n_bin = d // 2
     >>> p_bin = rng.uniform(0.4, 0.6, size=n_bin)
@@ -71,9 +73,11 @@ References:
     undirected graphs. Journal of Machine Learning Research 10(80), 2295–2328.
 """
 
+__version__ = "0.1.0"
+
 import logging
 
-from hume.correlation import (
+from humlpy.correlation import (
     adhoc_polyserial,
     f_hat,
     npn_pearson,
@@ -82,7 +86,7 @@ from hume.correlation import (
     PolyserialCorrelation,
 )
 
-from hume.estimation import (
+from humlpy.estimation import (
     MixedGraphResult,
     MixedGraphicalLasso,
     SampleCorrelation,
@@ -93,7 +97,7 @@ from hume.estimation import (
 )
 
 # Keep the Graph classes available
-from hume.graphs import PDAG, UGRAPH
+from humlpy.graphs import UGRAPH
 
 __all__ = [
     # New class-based API
@@ -116,7 +120,6 @@ __all__ = [
     "PolyserialCorrelation",
     # Graph classes
     "UGRAPH",
-    "PDAG",
 ]
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
