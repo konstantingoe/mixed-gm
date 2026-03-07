@@ -8,6 +8,8 @@
       
       
       
+        <link rel="canonical" href="https://konstantingoe.github.io/mixed-gm/">
+      
       
       
         <link rel="next" href="reference/">
@@ -17,11 +19,11 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
     
     
       
-        <title>HUME - Mixed Graph Estimation</title>
+        <title>HUMLPY - Mixed Graph Learning</title>
       
     
     
@@ -64,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#hume-high-dimensional-undirected-mixed-graph-estimation" class="md-skip">
+        <a href="#humlpy-high-dimensional-undirected-mixed-graph-learning-in-python" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +86,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="HUME - Mixed Graph Estimation" class="md-header__button md-logo" aria-label="HUME - Mixed Graph Estimation" data-md-component="logo">
+    <a href="." title="HUMLPY - Mixed Graph Learning" class="md-header__button md-logo" aria-label="HUMLPY - Mixed Graph Learning" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -98,13 +100,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            HUME - Mixed Graph Estimation
+            HUMLPY - Mixed Graph Learning
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              HUME: High-dimensional Undirected Mixed graph Estimation
+              HUMLPY: High-dimensional Undirected Mixed graph Learning in PYthon
             
           </span>
         </div>
@@ -194,13 +196,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="HUME - Mixed Graph Estimation" class="md-nav__button md-logo" aria-label="HUME - Mixed Graph Estimation" data-md-component="logo">
+    <a href="." title="HUMLPY - Mixed Graph Learning" class="md-nav__button md-logo" aria-label="HUMLPY - Mixed Graph Learning" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    HUME - Mixed Graph Estimation
+    HUMLPY - Mixed Graph Learning
   </label>
   
     <div class="md-nav__source">
@@ -240,7 +242,7 @@
   <span class="md-ellipsis">
     
   
-    HUME: High-dimensional Undirected Mixed graph Estimation
+    HUMLPY: High-dimensional Undirected Mixed graph Learning in PYthon
   
 
     
@@ -258,7 +260,7 @@
   <span class="md-ellipsis">
     
   
-    HUME: High-dimensional Undirected Mixed graph Estimation
+    HUMLPY: High-dimensional Undirected Mixed graph Learning in PYthon
   
 
     
@@ -474,10 +476,10 @@
   
 
 
-<h1 id="hume-high-dimensional-undirected-mixed-graph-estimation">HUME: High-dimensional Undirected Mixed graph Estimation</h1>
-<p>This site contains the documentation for the <code>hume</code> Python package.</p>
+<h1 id="humlpy-high-dimensional-undirected-mixed-graph-learning-in-python">HUMLPY: High-dimensional Undirected Mixed graph Learning in PYthon</h1>
+<p>This site contains the documentation for the <code>humlpy</code> Python package.</p>
 <h2 id="overview">Overview</h2>
-<p><strong>hume</strong> implements the methodology for learning sparse undirected graphical models
+<p><strong>humlpy</strong> implements the methodology for learning sparse undirected graphical models
 from arbitrary mixed data (any combination of continuous and ordinal variables)
 presented in:</p>
 <blockquote>
@@ -495,7 +497,7 @@ columns, then recover the graph.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">hume</span><span class="w"> </span><span class="kn">import</span> <span class="n">MixedGraphicalLasso</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">humlpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">MixedGraphicalLasso</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">20</span>
